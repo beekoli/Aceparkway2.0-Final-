@@ -30,6 +30,11 @@
   <meta name="robots" content="index, follow" />
   <meta name="author" content="Property Saraansh" />
 
+  <!-- Perf: preconnect + LCP hero preload -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+  <link rel="preconnect" href="https://www.youtube.com" />
+  <link rel="preconnect" href="https://i.ytimg.com" />
+  <link rel="preload" as="image" href="hero.webp" fetchpriority="high" />
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -38,13 +43,25 @@
   })(window,document,'script','dataLayer','GTM-5Z34CKXB');</script>
   <!-- End Google Tag Manager -->
 
-  <!-- Google Ads Tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-10828813008"></script>
+  <!-- Google Ads Tag (gtag.js) — deferred for speed; conversions fire via GTM dataLayer -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'AW-10828813008');
+    (function(){
+      var loaded=false;
+      function loadAds(){
+        if(loaded)return; loaded=true;
+        var sc=document.createElement('script');
+        sc.async=true; sc.src='https://www.googletagmanager.com/gtag/js?id=AW-10828813008';
+        document.head.appendChild(sc);
+        gtag('js', new Date());
+        gtag('config', 'AW-10828813008');
+      }
+      ['scroll','click','keydown','touchstart','mousemove'].forEach(function(ev){
+        window.addEventListener(ev, loadAds, {once:true, passive:true});
+      });
+      window.addEventListener('load', function(){ setTimeout(loadAds, 3500); });
+    })();
   </script>
   <!-- End Google Ads Tag -->
 
