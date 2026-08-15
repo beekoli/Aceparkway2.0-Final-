@@ -1951,7 +1951,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   <option value="+966">🇸🇦 +966</option>
                   <option value="+1">🇨🇦 +1</option>
                 </select>
-                <input type="tel" name="phone" placeholder="Mobile number" required />
+                <input type="tel" name="phone" placeholder="Mobile number" required pattern="[0-9]{7,15}" maxlength="15" inputmode="numeric" title="Enter digits only (7-15)" />
               </div>
             </div>
             <button type="submit" class="form-submit">GET PRE-LAUNCH DETAILS</button>
@@ -2751,7 +2751,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <option value="+974">🇶🇦 +974</option>
               <option value="+966">🇸🇦 +966</option>
             </select>
-            <input type="tel" name="phone" placeholder="Mobile number" required />
+            <input type="tel" name="phone" placeholder="Mobile number" required pattern="[0-9]{7,15}" maxlength="15" inputmode="numeric" title="Enter digits only (7-15)" />
           </div>
         </div>
         <button type="submit" class="form-submit">🔥 Get Pre-Launch Price Now</button>
@@ -2947,26 +2947,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         })
       : Promise.resolve(); // skip fetch if URL not yet configured
 
-    submitToSheet
-      .then(function() {
-        // Fire GTM form_submission conversion event
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-          'event': 'form_submission',
-          'form_id': formId,
-          'lead_name': data.name,
-          'lead_phone': data.phone,
-          'lead_interest': data.interest
-        });
-        // Redirect to thank-you page
-        window.location.href = 'thankyou.html';
-      })
-      .catch(function() {
-        // On network error still fire event + redirect — lead not lost
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({ 'event': 'form_submission', 'form_id': formId });
-        window.location.href = 'thankyou.html';
+    // Redirect only AFTER GTM has had a chance to fire the conversion tag.
+    // eventCallback fires as soon as tags finish; the timeout is a safety net so
+    // the user is never stuck if GTM is blocked or slow.
+    var hasRedirected = false;
+    function goToThankYou() {
+      if (hasRedirected) return;
+      hasRedirected = true;
+      window.location.href = 'thankyou.html';
+    }
+    function fireEventThenRedirect() {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'event': 'form_submission',
+        'form_id': formId,
+        'lead_name': data.name,
+        'lead_phone': data.phone,
+        'lead_interest': data.interest,
+        'eventCallback': goToThankYou,
+        'eventTimeout': 2000
       });
+      setTimeout(goToThankYou, 2000); // fallback if GTM never calls back
+    }
+
+    submitToSheet
+      .then(fireEventThenRedirect)
+      .catch(fireEventThenRedirect);
   }
 
   /* ─── FAQ ACCORDION ─── */
