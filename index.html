@@ -32,7 +32,6 @@
 
   <!-- Perf: preconnect + LCP hero preload -->
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
-  <link rel="preconnect" href="https://i.ytimg.com" />
   <link rel="preload" as="image" href="hero.webp" fetchpriority="high" />
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -2016,7 +2015,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         
       </div>
       <div class="overview-right">
-        <img height="533" width="800" src="hero.webp" alt="ACE Arte 150 Sector 150 Noida" />
+        <img height="928" width="1200" src="hero.webp" alt="ACE Arte 150 Sector 150 Noida" fetchpriority="high" decoding="async" />
       </div>
     </div>
   </div>
@@ -2444,7 +2443,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="loc-map scroll-reveal">
       <iframe
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3508.12!2d77.4792073!3d28.4323282!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cc11e97e4837d%3A0xbe848807723e93cb!2sACE+Parkway!5e0!3m2!1sen!2sin!4v1"
-        allowfullscreen="" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="ACE Arte 150 location map"></iframe>
     </div>
 
     <!-- Tabs -->
@@ -2833,7 +2832,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     } catch(e) {}
   }
-  detectCountry();
+  // Deferred: run country lookup off the critical path (idle or first engagement)
+  (function(){
+    var ran=false;
+    function runOnce(){ if(ran) return; ran=true; detectCountry(); }
+    ['focusin','touchstart','scroll','mousemove'].forEach(function(ev){
+      window.addEventListener(ev, runOnce, {once:true, passive:true});
+    });
+    if ('requestIdleCallback' in window) { requestIdleCallback(runOnce, {timeout:4000}); }
+    else { window.addEventListener("load", function(){ setTimeout(runOnce, 2500); }); }
+  })();
 
   /* ─── MODAL ─── */
   /* ─── MODAL ─── */
