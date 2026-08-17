@@ -2762,7 +2762,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   /* ─── AUTO COUNTRY CODE DETECTION ─── */
   async function detectCountry() {
     try {
-      const r = await fetch('https://ipapi.co/json/');
+        return; // country auto-detect removed for performance; phone defaults to +91
       const d = await r.json();
       const countryCodeMap = {
         'IN': '+91', 'AE': '+971', 'US': '+1', 'GB': '+44',
