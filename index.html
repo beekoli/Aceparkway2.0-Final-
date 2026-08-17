@@ -1782,12 +1782,6 @@
   <!-- ===== End Schema Markup ===== -->
 </head>
 <body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5Z34CKXB"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-
-<!-- Google Tag Manager (noscript) -->
 
 <!-- ─── STICKY HEADER ────────────────────────────────────────────── -->
 <header class="header">
@@ -1887,7 +1881,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="form-row">
               <label>Mobile Number *</label>
               <div class="phone-row">
-                <select name="countryCode" id="heroCountryCode">
+          <select name="countryCode" id="heroCountryCode" aria-label="Country dialing code">
                   <option value="+91">🇮🇳 +91</option>
                   <option value="+971">🇦🇪 +971</option>
                   <option value="+1">🇺🇸 +1</option>
@@ -2684,7 +2678,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="form-row">
           <label>Mobile Number *</label>
           <div class="phone-row">
-            <select name="countryCode">
+          <select name="countryCode" aria-label="Country dialing code">
               <option value="+91">🇮🇳 +91</option>
               <option value="+971">🇦🇪 +971</option>
               <option value="+1">🇺🇸 +1</option>
@@ -2757,35 +2751,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (v) sessionStorage.setItem(k, v);
     });
     sessionStorage.setItem('landing_url', window.location.href);
-  })();
-
-  /* ─── AUTO COUNTRY CODE DETECTION ─── */
-  async function detectCountry() {
-    try {
-        return; // country auto-detect removed for performance; phone defaults to +91
-      const d = await r.json();
-      const countryCodeMap = {
-        'IN': '+91', 'AE': '+971', 'US': '+1', 'GB': '+44',
-        'SG': '+65', 'AU': '+61', 'MY': '+60', 'QA': '+974',
-        'SA': '+966', 'CA': '+1', 'NZ': '+64', 'KW': '+965'
-      };
-      const code = countryCodeMap[d.country_code] || '+91';
-      document.querySelectorAll('select[name="countryCode"]').forEach(sel => {
-        for (let opt of sel.options) {
-          if (opt.value === code) { sel.value = code; break; }
-        }
-      });
-    } catch(e) {}
-  }
-  // Deferred: run country lookup off the critical path (idle or first engagement)
-  (function(){
-    var ran=false;
-    function runOnce(){ if(ran) return; ran=true; detectCountry(); }
-    ['focusin','touchstart','scroll','mousemove'].forEach(function(ev){
-      window.addEventListener(ev, runOnce, {once:true, passive:true});
-    });
-    if ('requestIdleCallback' in window) { requestIdleCallback(runOnce, {timeout:4000}); }
-    else { window.addEventListener("load", function(){ setTimeout(runOnce, 2500); }); }
   })();
 
   /* ─── MODAL ─── */
